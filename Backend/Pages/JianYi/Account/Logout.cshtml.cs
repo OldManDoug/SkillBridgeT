@@ -9,6 +9,7 @@ namespace SkillBridge.Web.Pages.Account;
 [Authorize]
 public sealed class LogoutModel : PageModel
 {
+    // Visiting a link only shows confirmation. Changing the session requires a protected POST form.
     public void OnGet() { }
 
     public async Task<IActionResult> OnPostAsync()

@@ -20,6 +20,7 @@ public sealed class AccountCookieEvents(IAccountRepository repository, ILogger<A
 
         try
         {
+            // Recheck the account on each request: a disabled user or an old account version must sign out.
             var lookup = await repository.FindByIdAsync(userId, context.HttpContext.RequestAborted);
             if (lookup is not AccountLookup.Found found || !found.Credentials.User.IsActive)
             {

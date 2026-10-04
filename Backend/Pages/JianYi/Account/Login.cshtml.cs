@@ -36,6 +36,7 @@ public sealed class LoginModel(AccountService accounts) : PageModel
 
         try
         {
+            // The service checks the saved password hash and active status before a cookie is created.
             var result = await accounts.AuthenticateAsync(Input.Email, Input.Password, cancellationToken);
             if (result is not AuthenticationResult.Authenticated authenticated)
             {

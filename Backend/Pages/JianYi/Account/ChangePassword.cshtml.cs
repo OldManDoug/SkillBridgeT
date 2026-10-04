@@ -29,6 +29,7 @@ public sealed class ChangePasswordModel(AccountService accounts) : PageModel
         try
         {
             var current = await accounts.GetActiveAsync(AccountSession.UserId(User), cancellationToken);
+            // Verify the old password before saving the new hash; changing the stamp ends other sessions.
             var user = await accounts.ChangePasswordAsync(current, Input.CurrentPassword, Input.NewPassword, cancellationToken);
             await AccountSession.SignInAsync(HttpContext, user);
             StatusMessage = "Your password has been changed. Other sessions must sign in again.";

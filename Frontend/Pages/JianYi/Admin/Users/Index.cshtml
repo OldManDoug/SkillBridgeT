@@ -1,0 +1,126 @@
+@page
+@model SkillBridge.Web.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "Manage users";
+}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a asp-page="/JianYi/Admin/Index">Administration</a><partial name="_Icon" model='@("chevron")' /><span aria-current="page">Users</span></nav>
+<div class="page-head">
+    <div>
+        <p class="eyebrow">ACCOUNTS AND ACCESS</p>
+        <h1>Manage users</h1>
+        <p>Manage account details, roles and access to SkillBridge.</p>
+    </div>
+    <a asp-page="/JianYi/Admin/Users/Edit" class="btn primary">Create user</a>
+</div>
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <div class="alert success" role="status"><partial name="_Icon" model='@("check")' /><span>@Model.StatusMessage</span></div>
+}
+<div asp-validation-summary="All" class="validation-summary" role="alert" tabindex="-1"></div>
+
+@* A GET form makes filters shareable in the URL; filtering never changes an account. *@
+<form method="get" class="toolbar" role="search">
+    <div class="field">
+        <label asp-for="Search">Search users</label>
+        <input asp-for="Search" class="control" type="search" maxlength="100" placeholder="Name or email address" aria-describedby="Search_error" />
+        <span asp-validation-for="Search" class="field-error" id="Search_error"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Role">Role</label>
+        <select asp-for="Role" class="control" aria-describedby="Role_error">
+            <option value="">All roles</option>
+            <option value="Member">Member</option>
+            <option value="Admin">Admin</option>
+        </select>
+        <span asp-validation-for="Role" class="field-error" id="Role_error"></span>
+    </div>
+    <div class="field">
+        <label asp-for="IsActive">Status</label>
+        <select asp-for="IsActive" class="control" aria-describedby="IsActive_error">
+            <option value="">All statuses</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </select>
+        <span asp-validation-for="IsActive" class="field-error" id="IsActive_error"></span>
+    </div>
+    <button class="btn primary" type="submit">Apply filters</button>
+    <a asp-page="/JianYi/Admin/Users/Index" class="btn secondary">Reset</a>
+</form>
+
+@if (Model.HasLoaded && Model.Results.TotalCount == 0)
+{
+    <section class="card empty">
+        <h2>No users found</h2>
+        <p>Try another name, email address or filter.</p>
+        <a asp-page="/JianYi/Admin/Users/Index" class="btn secondary">Show all users</a>
+    </section>
+}
+@if (Model.HasLoaded && Model.Results.TotalCount > 0)
+{
+    <p class="small muted" role="status">@Model.Results.TotalCount @(Model.Results.TotalCount == 1 ? "user" : "users") found</p>
+    <div class="card table-wrap">
+        <table class="data-table">
+            <caption class="visually-hidden">Users matching the current filters</caption>
+            <thead>
+                <tr>
+                    <th scope="col">User</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Joined (UTC)</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* Model.Results contains data loaded by OnGetAsync in the matching C# file. *@
+                @foreach (var user in Model.Results.Items)
+                {
+                    <tr>
+                        <td><span class="table-label">User</span>@user.DisplayName @if (user.Id == Model.CurrentUserId) { <span class="badge brand">You</span> }</td>
+                        <td><span class="table-label">Email</span>@user.Email</td>
+                        <td><span class="table-label">Role</span><span class="badge @(user.Role.ToString() == "Admin" ? "brand" : "")">@user.Role</span></td>
+                        <td><span class="table-label">Status</span><span class="badge @(user.IsActive ? "success" : "warning")">@(user.IsActive ? "Active" : "Inactive")</span></td>
+                        <td><span class="table-label">Joined</span><time datetime="@user.CreatedAtUtc.ToString("yyyy-MM-dd")">@user.CreatedAtUtc.ToString("dd MMM yyyy")</time></td>
+                        <td>
+                            <a asp-page="/JianYi/Admin/Users/Edit" asp-route-id="@user.Id" aria-label="Edit @user.DisplayName">Edit</a>
+                            @if (user.Id != Model.CurrentUserId)
+                            {
+                                <details class="delete-confirmation">
+                                    <summary>Delete</summary>
+                                    <p class="small">Delete <strong>@user.DisplayName</strong>? This cannot be undone. Accounts with learning or discussion records must be deactivated instead.</p>
+                                    @* This POST form includes a generated anti-forgery token. The server rechecks every rule. *@
+                                    <form method="post" asp-page-handler="Delete">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <input type="hidden" name="expectedStamp" value="@user.SecurityStamp" />
+                                        <input type="hidden" name="Search" value="@Model.Search" />
+                                        <input type="hidden" name="Role" value="@Model.Role" />
+                                        <input type="hidden" name="IsActive" value="@Model.IsActive" />
+                                        <input type="hidden" name="PageNumber" value="@Model.Results.Page" />
+                                        <div class="checkline">
+                                            <input type="checkbox" name="confirmDelete" value="true" id="confirm-delete-@user.Id" required />
+                                            <label for="confirm-delete-@user.Id">I confirm this deletion.</label>
+                                        </div>
+                                        <button class="btn danger small" type="submit">Delete user</button>
+                                    </form>
+                                </details>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <nav class="pagination" aria-label="User list pages">
+            <span>Page @Model.Results.Page of @Model.Results.TotalPages</span>
+            <div class="pages">
+                @if (Model.Results.Page > 1)
+                {
+                    <a class="page-number" asp-page="/JianYi/Admin/Users/Index" asp-route-Search="@Model.Search" asp-route-Role="@Model.Role" asp-route-IsActive="@Model.IsActive" asp-route-PageNumber="@(Model.Results.Page - 1)">Previous</a>
+                }
+                @if (Model.Results.Page < Model.Results.TotalPages)
+                {
+                    <a class="page-number" asp-page="/JianYi/Admin/Users/Index" asp-route-Search="@Model.Search" asp-route-Role="@Model.Role" asp-route-IsActive="@Model.IsActive" asp-route-PageNumber="@(Model.Results.Page + 1)">Next</a>
+                }
+            </div>
+        </nav>
+    </div>
+}

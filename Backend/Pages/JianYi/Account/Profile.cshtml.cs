@@ -13,6 +13,7 @@ namespace SkillBridge.Web.Pages.Account;
 [Authorize]
 public sealed class ProfileModel(AccountService accounts) : PageModel
 {
+    // [Authorize] requires login; the user ID always comes from that login, never from a posted ID.
     [BindProperty]
     public InputModel Input { get; set; } = new();
 
@@ -46,6 +47,7 @@ public sealed class ProfileModel(AccountService accounts) : PageModel
         {
             var current = await accounts.GetActiveAsync(AccountSession.UserId(User), cancellationToken);
             var user = await accounts.UpdateProfileAsync(current, Input.DisplayName, Input.Email, cancellationToken);
+            // Refresh this browser's cookie after changing the name/email and account version.
             await AccountSession.SignInAsync(HttpContext, user);
             StatusMessage = "Your profile has been saved. Other sessions must sign in again.";
             return RedirectToPage();

@@ -4,6 +4,7 @@
     var displayName = User.Identity?.Name ?? "Learner";
     var initials = string.Concat(displayName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(part => char.ToUpperInvariant(part[0])));
     var isAdmin = User.IsInRole("Admin");
+    var isAdminPage = currentPage.Contains("/Admin/", StringComparison.Ordinal);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +35,7 @@
                 <a class="nav-link @(currentPage.StartsWith("/Hamzah/Forum") ? "active" : "")" asp-page="/Hamzah/Forum/Index">Community</a>
                 @if (isAdmin)
                 {
-                    <a class="nav-link @(currentPage.StartsWith("/JianYi/Admin") ? "active" : "")" asp-page="/JianYi/Admin/Index">Admin</a>
+                    <a class="nav-link @(isAdminPage ? "active" : "")" asp-page="/JianYi/Admin/Index">Admin</a>
                 }
                 <div class="mobile-account">
                     @if (isAuthenticated)

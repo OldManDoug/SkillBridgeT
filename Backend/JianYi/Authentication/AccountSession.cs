@@ -6,6 +6,7 @@ using SkillBridge.Web.Features.Accounts;
 
 namespace SkillBridge.Web.Infrastructure.Authentication;
 
+// Claims put the user's ID, name, role and account version into the protected sign-in cookie.
 public static class AccountSession
 {
     public const string SecurityStampClaim = "skillbridge:security_stamp";

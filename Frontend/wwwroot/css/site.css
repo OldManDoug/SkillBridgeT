@@ -1921,3 +1921,31 @@ textarea:focus-visible {
 .empty h1 {
     margin-bottom: 16px;
 }
+
+/* Keep table captions available to screen readers without adding a second visible heading. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.delete-confirmation {
+    margin-top: 8px;
+    max-width: 280px;
+}
+
+.delete-confirmation > summary {
+    color: var(--danger);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.delete-confirmation[open] {
+    min-width: min(240px, 100%);
+}

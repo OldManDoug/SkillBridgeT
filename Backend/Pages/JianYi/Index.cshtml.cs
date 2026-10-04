@@ -9,6 +9,7 @@ public sealed class IndexModel(ICourseReader courses) : PageModel
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
+        // Reuse the catalogue reader so the home page only advertises published courses.
         FeaturedCourses = (await courses.GetPublishedAsync(null, cancellationToken)).Take(2).ToArray();
     }
 }

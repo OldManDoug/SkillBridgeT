@@ -20,7 +20,10 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     WebRootPath = "Frontend/wwwroot"
 });
 
+// Register the C# classes requested by page constructors. Scoped means one instance per web request.
 builder.Services.AddAccountFoundation(builder.Configuration);
+builder.Services.AddScoped<IAdminUserStore, MySqlAdminUserStore>();
+builder.Services.AddScoped<AdminUserService>();
 builder.Services.AddScoped<ICourseReader, MySqlCourseReader>();
 builder.Services.AddScoped<IForumReader, MySqlForumReader>();
 builder.Services.AddScoped<IDashboardReader, MySqlDashboardReader>();
@@ -28,6 +31,7 @@ builder.Services.AddScoped<ILessonReader, MySqlLessonReader>();
 builder.Services.AddScoped<IQuizReader, MySqlQuizReader>();
 builder.Services.AddRazorPages(options =>
 {
+    // Files stay in their owner's folder, while visitors see short URLs such as /Admin/Users.
     options.RootDirectory = "/Frontend/Pages";
     string[] owners = ["JianYi", "ChangZhe", "Darren", "Timothy", "Hamzah"];
     foreach (var owner in owners)
@@ -109,6 +113,7 @@ app.Use(async (context, next) =>
 app.UseStatusCodePagesWithReExecute("/Status/{0}");
 app.UseRouting();
 app.UseRateLimiter();
+// Read and validate the sign-in cookie before checking page permissions.
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();

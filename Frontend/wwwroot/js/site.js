@@ -37,6 +37,17 @@ for (const button of document.querySelectorAll("[data-show-password]")) {
     button.addEventListener("click", () => togglePassword(button));
 }
 
+// Give immediate feedback in the browser; the C# form model checks the same rule on the server.
+for (const confirmation of document.querySelectorAll("[data-match-password]")) {
+    const password = document.getElementById(confirmation.dataset.matchPassword);
+    const checkMatch = () => confirmation.setCustomValidity(
+        confirmation.value && confirmation.value !== password.value ? "The passwords do not match." : ""
+    );
+    confirmation.addEventListener("input", checkMatch);
+    password.addEventListener("input", checkMatch);
+    checkMatch();
+}
+
 for (const input of document.querySelectorAll(".input-validation-error")) {
     input.setAttribute("aria-invalid", "true");
 }

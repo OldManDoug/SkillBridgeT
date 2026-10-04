@@ -3,6 +3,7 @@ using SkillBridge.Web.Features.Accounts;
 
 namespace SkillBridge.Web.Infrastructure.Data;
 
+// This class translates account operations into SQL. await using closes database resources after each request.
 public sealed class MySqlAccountRepository(MySqlConnectionFactory connections) : IAccountRepository
 {
     private const string UserColumns = "u.id, u.display_name, u.email, r.name AS role_name, u.is_active, u.security_stamp, u.password_hash";
@@ -11,6 +12,7 @@ public sealed class MySqlAccountRepository(MySqlConnectionFactory connections) :
     {
         await using var connection = await connections.OpenAsync(cancellationToken);
         await using var command = new MySqlCommand($"SELECT {UserColumns} FROM users u JOIN roles r ON r.id = u.role_id WHERE u.normalized_email = @email LIMIT 1", connection);
+        // A parameter supplies data separately from the query, so input cannot become SQL instructions.
         command.Parameters.AddWithValue("@email", normalizedEmail);
         return await ReadAccountAsync(command, cancellationToken);
     }
@@ -75,6 +77,7 @@ public sealed class MySqlAccountRepository(MySqlConnectionFactory connections) :
 
     private static void AddIdentityParameters(MySqlCommand command, AccountUser user, string securityStamp)
     {
+        // Only update the version we read; another request may have changed this account in the meantime.
         command.Parameters.AddWithValue("@id", user.Id);
         command.Parameters.AddWithValue("@stamp", securityStamp);
         command.Parameters.AddWithValue("@oldStamp", user.SecurityStamp);

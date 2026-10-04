@@ -8,12 +8,16 @@
     <div>
         <div class="eyebrow">Small courses. Useful skills.</div>
         <h1>Build the skills behind your next project.</h1>
-        <p>Learn Git and SQL through focused lessons, short demonstrations and self-assessment. Start at your pace and ask questions as you go.</p>
+        <p>Learn Git, SQL and Linux through focused lessons, short demonstrations and self-assessment. Start at your pace and ask questions as you go.</p>
         <div class="actions">
             <a class="btn primary" asp-page="/ChangZhe/Courses/Index">Explore courses</a>
-            @if (User.Identity?.IsAuthenticated == true)
+            @if (User.Identity?.IsAuthenticated == true && !User.IsInRole("Admin"))
             {
                 <a class="btn secondary" asp-page="/ChangZhe/Courses/Mine">My courses</a>
+            }
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="btn secondary" asp-page="/JianYi/Admin/Index">Administration</a>
             }
             @if (User.Identity?.IsAuthenticated != true)
             {

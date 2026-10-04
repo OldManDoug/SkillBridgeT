@@ -11,6 +11,7 @@ namespace SkillBridge.Web.Pages.Account;
 [AllowAnonymous]
 public sealed class RegisterModel(AccountService accounts) : PageModel
 {
+    // A submitted Input.Email field becomes Input.Email here; it is still untrusted until validated.
     [BindProperty]
     public InputModel Input { get; set; } = new();
 
@@ -19,6 +20,7 @@ public sealed class RegisterModel(AccountService accounts) : PageModel
 
     public IActionResult OnGet()
     {
+        // Only allow a return address inside this website, even if someone changes the URL manually.
         ReturnUrl = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl : "/";
         ModelState.Remove(nameof(ReturnUrl));
         if (User.Identity?.IsAuthenticated is true)
@@ -34,11 +36,13 @@ public sealed class RegisterModel(AccountService accounts) : PageModel
         if (User.Identity?.IsAuthenticated is true)
             return LocalRedirect(ReturnUrl ?? "/");
 
+        // The attributes in InputModel run on the server, even when browser validation is bypassed.
         if (!ModelState.IsValid)
             return InvalidPage();
 
         try
         {
+            // Save first, then issue the login cookie. await waits without blocking the server thread.
             var user = await accounts.RegisterAsync(Input.DisplayName, Input.Email, Input.Password, cancellationToken);
             await AccountSession.SignInAsync(HttpContext, user);
             return LocalRedirect(ReturnUrl ?? "/");
@@ -58,6 +62,7 @@ public sealed class RegisterModel(AccountService accounts) : PageModel
 
     private PageResult InvalidPage()
     {
+        // Redisplay errors and ordinary fields, but never refill password inputs from a failed submission.
         Input.Password = string.Empty;
         Input.ConfirmPassword = string.Empty;
         ModelState.SetModelValue("Input.Password", string.Empty, string.Empty);
@@ -67,6 +72,7 @@ public sealed class RegisterModel(AccountService accounts) : PageModel
 
     public sealed class InputModel
     {
+        // The setter trims names/emails as they enter the form model; passwords are not trimmed.
         [Required, StringLength(80, MinimumLength = 2), Display(Name = "Display name")]
         public string DisplayName { get; set => field = value?.Trim() ?? string.Empty; } = string.Empty;
 

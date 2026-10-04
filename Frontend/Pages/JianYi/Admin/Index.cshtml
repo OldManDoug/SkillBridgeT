@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Administration";
 }
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a asp-page="/JianYi/Index">Home</a><partial name="_Icon" model='@("chevron")' /><span aria-current="page">Administration</span></nav>
 <div class="page-head">
     <div>
         <p class="eyebrow">SKILLBRIDGE ADMINISTRATION</p>
@@ -11,6 +12,11 @@
     </div>
 </div>
 <div class="grid four">
+    @* Model.Summary contains the live counts loaded by this page's C# OnGetAsync handler. *@
+    <section class="card stat">
+        <span class="label">Total users</span>
+        <strong class="value">@Model.Summary.Users</strong>
+    </section>
     <section class="card stat">
         <span class="label">Members</span>
         <strong class="value">@Model.Summary.Members</strong>
@@ -27,7 +33,26 @@
         <span class="label">Lessons</span>
         <strong class="value">@Model.Summary.Lessons</strong>
     </section>
+    <section class="card stat">
+        <span class="label">Enrolments</span>
+        <strong class="value">@Model.Summary.Enrolments</strong>
+    </section>
+    <section class="card stat">
+        <span class="label">Quiz attempts</span>
+        <strong class="value">@Model.Summary.QuizAttempts</strong>
+    </section>
+    <section class="card stat">
+        <span class="label">Discussion threads</span>
+        <strong class="value">@Model.Summary.Threads</strong>
+    </section>
 </div>
+<section class="card section-space">
+    <div class="card-body">
+        <h2>User accounts</h2>
+        <p>Create accounts, update roles and access, or remove unused accounts.</p>
+        <a asp-page="/JianYi/Admin/Users/Index" class="btn primary">Manage users</a>
+    </div>
+</section>
 <section class="card section-space">
     <div class="card-body">
         <h2>Learning content</h2>

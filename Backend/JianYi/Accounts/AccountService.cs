@@ -1,5 +1,6 @@
 namespace SkillBridge.Web.Features.Accounts;
 
+// Account rules live here. The injected repository saves data; the password service hashes/checks passwords.
 public sealed class AccountService(IAccountRepository repository, IPasswordService passwords)
 {
     public const int MinimumPasswordLength = 12;
@@ -7,6 +8,7 @@ public sealed class AccountService(IAccountRepository repository, IPasswordServi
 
     public static string NormalizeEmail(string email) => email.Trim().ToUpperInvariant();
 
+    // Public registration always creates a Member; a submitted role field cannot grant Admin access.
     public Task<AccountUser> RegisterAsync(string displayName, string email, string password, CancellationToken cancellationToken) =>
         CreateAsync(displayName, email, password, UserRole.Member, cancellationToken);
 
@@ -19,6 +21,7 @@ public sealed class AccountService(IAccountRepository repository, IPasswordServi
         if (lookup is not AccountLookup.Found found || !found.Credentials.User.IsActive)
             return new AuthenticationResult.Rejected();
 
+        // Compare using the password hasher; never compare or store plain-text passwords in SQL.
         var verification = passwords.Verify(found.Credentials.PasswordHash, password);
         if (verification is PasswordVerification.Failed)
             return new AuthenticationResult.Rejected();

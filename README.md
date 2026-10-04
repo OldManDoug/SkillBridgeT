@@ -3,6 +3,7 @@
 WAPP Group 3 · ASP.NET Core Razor Pages · MySQL
 
 Read [TEAM_START_HERE.txt](TEAM_START_HERE.txt) for your part, folders and steps.
+Read [JIAN_YI_EXAMPLE.txt](JIAN_YI_EXAMPLE.txt) to follow a complete form through C# and SQL, then start your own feature.
 This is the shared starter; the team still needs to finish the features.
 
 ## Run

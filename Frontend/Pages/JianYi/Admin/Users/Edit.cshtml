@@ -1,0 +1,102 @@
+@page "{id:long?}"
+@model SkillBridge.Web.Pages.Admin.Users.EditModel
+@{
+    ViewData["Title"] = Model.IsCreate ? "Create user" : "Edit user";
+}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a asp-page="/JianYi/Admin/Index">Administration</a><partial name="_Icon" model='@("chevron")' /><a asp-page="/JianYi/Admin/Users/Index">Users</a><partial name="_Icon" model='@("chevron")' /><span aria-current="page">@ViewData["Title"]</span></nav>
+<div class="page-head">
+    <div>
+        <p class="eyebrow">ACCOUNTS AND ACCESS</p>
+        <h1>@ViewData["Title"]</h1>
+        <p>@(Model.IsCreate ? "Add a member or administrator to SkillBridge." : "Update this user's details and access.")</p>
+    </div>
+</div>
+<div class="split">
+    <section class="card">
+        <div class="card-head"><h2>Account details</h2></div>
+        <div class="card-body">
+            @* asp-for connects each control to Input in Edit.cshtml.cs; Razor encodes its displayed value. *@
+            <form method="post">
+                <input type="hidden" asp-for="Input.SecurityStamp" />
+                <div asp-validation-summary="All" class="validation-summary" role="alert" tabindex="-1"></div>
+                @if (Model.IsStale)
+                {
+                    <p><a asp-page="/JianYi/Admin/Users/Edit" asp-route-id="@Model.Id">Reload the latest user details</a></p>
+                }
+                <div class="field">
+                    <label asp-for="Input.DisplayName">Full name<span class="required" aria-hidden="true">*</span></label>
+                    <input asp-for="Input.DisplayName" class="control" autocomplete="off" required minlength="2" maxlength="80" aria-describedby="Input_DisplayName_error" />
+                    <span asp-validation-for="Input.DisplayName" class="field-error" id="Input_DisplayName_error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Input.Email">Email address<span class="required" aria-hidden="true">*</span></label>
+                    <input asp-for="Input.Email" class="control" type="email" autocomplete="off" required maxlength="254" aria-describedby="Input_Email_error Input_Email_hint" />
+                    <div class="hint" id="Input_Email_hint">This address is used to sign in.</div>
+                    <span asp-validation-for="Input.Email" class="field-error" id="Input_Email_error"></span>
+                </div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label asp-for="Input.Role">Role<span class="required" aria-hidden="true">*</span></label>
+                        <select asp-for="Input.Role" class="control" required disabled="@Model.IsOwnAccount" aria-describedby="Input_Role_error">
+                            <option value="Member">Member</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                        <span asp-validation-for="Input.Role" class="field-error" id="Input_Role_error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Input.IsActive">Status<span class="required" aria-hidden="true">*</span></label>
+                        <select asp-for="Input.IsActive" class="control" required disabled="@Model.IsOwnAccount" aria-describedby="Input_IsActive_error">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                        <span asp-validation-for="Input.IsActive" class="field-error" id="Input_IsActive_error"></span>
+                    </div>
+                </div>
+                @if (Model.IsOwnAccount)
+                {
+                    @* Disabled controls are not submitted; these fixed values preserve our own admin access. *@
+                    <input type="hidden" name="Input.Role" value="Admin" />
+                    <input type="hidden" name="Input.IsActive" value="true" />
+                    <p class="hint">You cannot change your own role or deactivate your own account here.</p>
+                }
+                @if (Model.IsCreate)
+                {
+                    @* Passwords are needed only when creating an account, never to edit someone else's details. *@
+                    <div class="field">
+                        <label asp-for="Input.Password">Password<span class="required" aria-hidden="true">*</span></label>
+                        <div class="password-wrap">
+                            <input asp-for="Input.Password" class="control" type="password" autocomplete="new-password" value="" required minlength="12" maxlength="128" aria-describedby="Input_Password_error Input_Password_hint" />
+                            <button class="password-toggle" type="button" data-show-password="Input_Password" aria-label="Show password" aria-pressed="false">Show</button>
+                        </div>
+                        <div class="hint" id="Input_Password_hint">Use 12–128 characters. The user can change their password after signing in.</div>
+                        <span asp-validation-for="Input.Password" class="field-error" id="Input_Password_error"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="Input.ConfirmPassword">Confirm password<span class="required" aria-hidden="true">*</span></label>
+                        <div class="password-wrap">
+                            <input asp-for="Input.ConfirmPassword" class="control" type="password" autocomplete="new-password" value="" required minlength="12" maxlength="128" data-match-password="Input_Password" aria-describedby="Input_ConfirmPassword_error" />
+                            <button class="password-toggle" type="button" data-show-password="Input_ConfirmPassword" aria-label="Show confirm password" aria-pressed="false">Show</button>
+                        </div>
+                        <span asp-validation-for="Input.ConfirmPassword" class="field-error" id="Input_ConfirmPassword_error"></span>
+                    </div>
+                }
+                <div class="actions">
+                    <button class="btn primary" type="submit">@(Model.IsCreate ? "Create user" : "Save changes")</button>
+                    <a asp-page="/JianYi/Admin/Users/Index" class="btn secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </section>
+    <aside class="card">
+        <div class="card-body">
+            <h2>Choose the right access</h2>
+            <p><strong>Member:</strong> enrol in courses, study lessons, take quizzes and join discussions.</p>
+            <p><strong>Admin:</strong> manage users and learning content. Give this role only to someone who should manage the system.</p>
+            <p><strong>Inactive:</strong> prevents sign-in while preserving the user's existing records.</p>
+            @if (!Model.IsCreate)
+            {
+                <p>Saving changes ends this user's other sessions. Password changes are made by the account owner from My profile.</p>
+            }
+        </div>
+    </aside>
+</div>
