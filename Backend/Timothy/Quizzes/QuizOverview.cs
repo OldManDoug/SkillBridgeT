@@ -11,4 +11,4 @@ public sealed record QuizOverview(
     bool IsPublished,
     bool IsCoursePublished);
 
-public sealed record QuizSummary(long Id, string CourseTitle, string Title, bool IsPublished, int QuestionCount);
+public sealed record QuizSummary(long Id, string CourseTitle, string Title, bool IsPublished, int QuestionCount, int attempts);
