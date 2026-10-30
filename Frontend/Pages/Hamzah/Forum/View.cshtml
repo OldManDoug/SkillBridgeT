@@ -1,0 +1,101 @@
+@page
+@model SkillBridge.Web.Pages.Hamzah.Forum.ViewModel
+@{
+    ViewData["Title"] = Model.Thread.Title;
+}
+<div class="page-head">
+    <div>
+        <p class="eyebrow">COMMUNITY DISCUSSION</p>
+        <h1>@Model.Thread.Title</h1>
+        <p class="muted">
+            Started by @Model.Thread.AuthorName on @Model.Thread.CreatedAtUtc.ToString("dd MMM yyyy")
+            @if (Model.Thread.IsPinned)
+            {
+                <span class="badge">Pinned</span>
+            }
+            @if (Model.Thread.IsLocked)
+            {
+                <span class="badge">Locked</span>
+            }
+        </p>
+    </div>
+    <div class="actions">
+        @if (Model.IsThreadAuthor || Model.IsModerator)
+        {
+            <a asp-page="/Hamzah/Forum/Editor" asp-route-id="@Model.Thread.Id" class="btn secondary">Edit</a>
+            <form method="post" asp-page-handler="DeleteThread" asp-route-id="@Model.Thread.Id" data-confirm="Delete this discussion and all of its replies?">
+                <button type="submit" class="btn danger">Delete</button>
+            </form>
+        }
+    </div>
+</div>
+
+<section class="card section-space">
+    <div class="card-body">
+        <p class="muted">@Model.Thread.AuthorName</p>
+        <p class="body-copy">@Model.Thread.Body</p>
+    </div>
+</section>
+
+<h2>Replies (@Model.Replies.Count)</h2>
+@foreach (var reply in Model.Replies)
+{
+    <article class="card section-space">
+        <div class="card-body">
+            <p class="muted">
+                @reply.AuthorName · @reply.CreatedAtUtc.ToString("dd MMM yyyy, HH:mm")
+                @if (reply.UpdatedAtUtc > reply.CreatedAtUtc)
+                {
+                    <span>(edited)</span>
+                }
+            </p>
+            <p class="body-copy">@reply.Body</p>
+            @if (Model.IsModerator || (User.Identity?.IsAuthenticated == true && reply.AuthorId.ToString() == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value))
+            {
+                <form method="post" asp-page-handler="DeleteReply" asp-route-id="@Model.Thread.Id" data-confirm="Delete this reply?">
+                    <input type="hidden" name="ReplyId" value="@reply.Id" />
+                    <button type="submit" class="btn ghost small">Delete reply</button>
+                </form>
+            }
+        </div>
+    </article>
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    @if (Model.Thread.IsLocked)
+    {
+        <section class="card">
+            <div class="card-body">
+                <p class="muted">This discussion is locked, so no new replies can be posted.</p>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="card section-space">
+            <div class="card-body">
+                <h2>Post a reply</h2>
+                <form method="post" asp-page-handler="Reply" asp-route-id="@Model.Thread.Id">
+                    <div asp-validation-summary="ModelOnly" class="field-validation-error"></div>
+                    <div class="field">
+                        <label asp-for="ReplyBody">Your reply <span class="required">*</span></label>
+                        <textarea asp-for="ReplyBody" class="control" rows="5"></textarea>
+                        <span asp-validation-for="ReplyBody" class="field-error"></span>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="btn primary">Post reply</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    }
+}
+else
+{
+    <section class="card">
+        <div class="card-body">
+            <p class="muted"><a asp-page="/JianYi/Account/Login">Sign in</a> to join this discussion.</p>
+        </div>
+    </section>
+}
