@@ -1,13 +1,24 @@
-namespace SkillBridge.Web.Features.Lessons;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public sealed record LessonSummary(long Id, long CourseId, string CourseTitle, string Title, int SequenceNumber, int DurationMinutes, bool IsPublished);
-
-public sealed record LessonResource(string Title, string Description, string ResourceType, long SizeBytes);
-
-public sealed record LessonDetail(LessonSummary Lesson, string Summary, string Body, IReadOnlyList<LessonResource> Resources);
-
-public interface ILessonReader
+namespace SkillBridge.Backend.Darren.Lessons
 {
-    Task<LessonDetail?> GetByIdAsync(long id, long userId, bool isAdmin, CancellationToken cancellationToken);
-    Task<IReadOnlyList<LessonSummary>> GetForAdministrationAsync(CancellationToken cancellationToken);
+    public interface ILessonReader
+    {
+        Task<List<CourseOption>> GetCourseOptionsAsync();
+        Task<List<LessonItem>> GetLessonsAsync(long? courseId, string? search);
+        Task<LessonItem?> GetLessonByIdAsync(long id);
+        Task<long> CreateLessonAsync(LessonInput input);
+        Task UpdateLessonAsync(long id, LessonInput input);
+        Task DeleteLessonAsync(long id);
+
+        Task<List<LessonOption>> GetLessonOptionsAsync();
+        Task<List<ResourceItem>> GetResourcesAsync(long? lessonId, string? search);
+        Task<ResourceItem?> GetResourceByIdAsync(long id);
+        Task<List<ResourceItem>> GetResourcesByLessonIdAsync(long lessonId);
+        Task DeleteResourceAsync(long id);
+
+        Task<bool> IsLessonCompletedAsync(long userId, long lessonId);
+        Task ToggleLessonCompletionAsync(long userId, long lessonId);
+    }
 }

@@ -45,3 +45,10 @@
         }
     </div>
 </section>
+
+@if (!User.IsInRole("Admin"))
+{
+    <form method="post" asp-page-handler="ToggleCompletion" asp-route-id="@Model.Detail.Lesson.Id">
+        <button class="btn primary" type="submit">@(Model.IsCompleted ? "Mark incomplete" : "Mark complete")</button>
+    </form>
+}

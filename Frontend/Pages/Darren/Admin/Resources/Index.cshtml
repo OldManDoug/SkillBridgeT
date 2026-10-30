@@ -1,0 +1,14 @@
+@page
+@model SkillBridge.Backend.Pages.Darren.Admin.Resources.IndexModel
+@{ ViewData["Title"] = "Resources"; }
+<h1>Resources</h1>
+<p>Resource upload, editing, download and media playback still need to be implemented.</p>
+<a asp-page="Edit" class="btn secondary">View resource form</a>
+<div class="card table-wrap section-space">
+<table class="data-table"><thead><tr><th>Title</th><th>Lesson</th><th>Type</th></tr></thead><tbody>
+@foreach (var resource in Model.Resources)
+{
+    <tr><td>@resource.Title</td><td>@resource.LessonTitle</td><td>@resource.FileType</td></tr>
+}
+@if (Model.Resources.Count == 0) { <tr><td colspan="3">No resources saved.</td></tr> }
+</tbody></table></div>

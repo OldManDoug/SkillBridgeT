@@ -27,7 +27,8 @@ builder.Services.AddScoped<AdminUserService>();
 builder.Services.AddScoped<ICourseReader, MySqlCourseReader>();
 builder.Services.AddScoped<IForumReader, MySqlForumReader>();
 builder.Services.AddScoped<IDashboardReader, MySqlDashboardReader>();
-builder.Services.AddScoped<ILessonReader, MySqlLessonReader>();
+builder.Services.AddScoped<ILessonReader, MySqlLessonDetailReader>();
+builder.Services.AddScoped<SkillBridge.Backend.Darren.Lessons.ILessonReader, SkillBridge.Backend.Darren.Data.MySqlLessonReader>();
 builder.Services.AddScoped<IQuizReader, MySqlQuizReader>();
 builder.Services.AddScoped<QuizAttemptStore>();
 builder.Services.AddRazorPages(options =>

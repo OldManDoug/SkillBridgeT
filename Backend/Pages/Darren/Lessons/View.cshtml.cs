@@ -7,8 +7,9 @@ using SkillBridge.Web.Features.Lessons;
 namespace SkillBridge.Web.Pages.Lessons;
 
 [Authorize]
-public sealed class ViewModel(ILessonReader lessons) : PageModel
+public sealed class ViewModel(ILessonReader lessons, SkillBridge.Backend.Darren.Lessons.ILessonReader progress) : PageModel
 {
+    public bool IsCompleted { get; private set; }
     public LessonDetail Detail { get; private set; } = null!;
 
     public async Task<IActionResult> OnGetAsync(long id, CancellationToken cancellationToken)
@@ -20,6 +21,16 @@ public sealed class ViewModel(ILessonReader lessons) : PageModel
         if (lesson is null) return NotFound();
 
         Detail = lesson;
+        IsCompleted = await progress.IsLessonCompletedAsync(userId, id);
         return Page();
+    }
+    public async Task<IActionResult> OnPostToggleCompletionAsync(long id, CancellationToken cancellationToken)
+    {
+        var result = await OnGetAsync(id, cancellationToken);
+        if (result is not PageResult) return result;
+        if (User.IsInRole("Admin")) return Forbid();
+        var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        await progress.ToggleLessonCompletionAsync(userId, id);
+        return RedirectToPage(new { id });
     }
 }
