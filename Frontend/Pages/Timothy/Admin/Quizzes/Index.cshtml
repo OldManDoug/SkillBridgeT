@@ -11,6 +11,9 @@
         <p>View course assessments and their publication status.</p>
     </div>
 </div>
+<!--FOR CREATE QUIZ will go to dedicated page -->
+<a class="btn primary" asp-page="/Timothy/Admin/Quizzes/Create">Create quiz</a>
+@if (!string.IsNullOrEmpty(Model.StatusMessage)) { <p role="status">@Model.StatusMessage</p> }
 @if (Model.Quizzes.Count == 0)
 {
     <section class="card empty">
@@ -26,28 +29,41 @@ else
                 <tr>
                     <th scope="col">Quiz</th>
                     <th scope="col">Course</th>
-                    <th scope="col">Status</th>
                     <th scope="col">Questions</th>
+                    <th scope="col">Pass Mark</th>
+                    <th scope="col">Attempts</th>
+                    <th scope="col">Status</th>
                     <th scope="col">Preview</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var quiz in Model.Quizzes)
+
+                @foreach (var quiz in Model.Quizzes )
                 {
+                    //how to make the attempts however?
                     <tr>
                         <td><span class="table-label">Quiz</span>@quiz.Title</td>
                         <td><span class="table-label">Course</span>@quiz.CourseTitle</td>
+                        <td><span class="table-label">Questions</span>@quiz.QuestionCount</td>
+                       <td><span class="table-label">Pass Mark </span>@quiz.PassPercentage</td>
+                       <td><span class="table-label">Attempts</span>@quiz.attempts</td>
                         <td>
                             <span class="table-label">Status</span>
                             <span class="badge @(quiz.IsPublished ? "success" : "warning")">@(quiz.IsPublished ? "Published" : "Draft")</span>
                         </td>
-                        <td><span class="table-label">Questions</span>@quiz.QuestionCount</td>
                         <td class="actions">
                             <a asp-page="/Timothy/Quizzes/Start" asp-route-quizId="@quiz.Id" aria-label="Preview @quiz.Title">Preview</a>
+                            <a class="edit-btn" asp-page="/Timothy/Admin/Quizzes/Update" asp-route-id="@quiz.Id">Edit</a>
+                            <form method="post" asp-page-handler="Delete" asp-route-quizId="@quiz.Id" data-confirm="Delete this unused quiz?">
+                                <button type="submit" class="btn danger">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 }
+
             </tbody>
         </table>
+
     </div>
+
 }

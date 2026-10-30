@@ -1,0 +1,111 @@
+@page
+@model SkillBridge.Web.Pages.Admin.Quizzes.CreateModel
+@{
+    ViewData["Title"] = "Create Quiz";
+}
+
+<div class="admin-layout">
+    <!-- Main Content Area -->
+    <main class="container">
+        <a asp-page="/Timothy/Admin/Quizzes/Index" class="breadcrumbs">Admin > Quizzes > Create quiz</a>
+
+        <div class="page-head">
+            <div>
+                <h1>Create quiz</h1>
+                <p>Create a draft, then add its questions and correct answers.</p>
+            </div>
+        </div>
+
+        <div class="alert info" role="status">
+            <strong>Choose a course without a quiz</strong>
+            <p>Each course can have one quiz. Only courses without a quiz are listed.</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage)){ //for error take from our own
+        <div class="alert error">@Model.ErrorMessage</div>}
+
+        <div class="split">
+            <!-- Left Form Column -->
+            <form method="post" class="card form-card">
+                <div asp-validation-summary="All" class="field-error"></div>
+                <div class="form-header">
+                    <h2>Quiz details</h2>
+                    <span class="required-note">* Required</span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Title">Quiz title *</label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g. Practice course check" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                    <small class="muted">3–100 characters.</small>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CourseId">Course *</label>
+                    <select asp-for="CourseId" class="form-control" required>
+                        <option value="">Select a course...</option>
+                        @foreach (var course in Model.Courses) { <option value="@course.Id">@course.Title</option> }
+                    </select>
+                    <span asp-validation-for="CourseId" class="text-danger"></span>
+                    <small class="muted">An unused draft course with no quiz yet.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Instructions </label>
+                    <textarea asp-for="instructions" class="form-control" rows="4" placeholder="Enter instructions for students..." required></textarea>
+                    <span asp-validation-for="instructions" class="text-danger"></span>
+                    <small class="muted">30–600 characters.</small>
+                </div>
+
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label asp-for="pass_percentage">Pass percentage *</label>
+                        <input asp-for="pass_percentage" type="number" min="1" max="100" step="0.01" class="form-control" required />
+                        <span asp-validation-for="pass_percentage" class="text-danger"></span>
+                        <small class="muted">Percentage from 1 to 100.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="IsPublished">Publication status *</label>
+                        <select asp-for="IsPublished" class="form-control">
+                            <option value="false">Draft</option>
+                            <option value="true">Published</option>
+                        </select>
+                        <small class="muted">Add valid questions before publishing.</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Create quiz</button>
+                    <a asp-page="/Timothy/Admin/Quizzes/Index" class="btn secondary">Cancel</a>
+                </div>
+            </form>
+
+            <!-- Right Sidebar Columns matching Figma -->
+            <aside class="sidebar-stack">
+                <div class="card summary-card">
+                    <div class="badge draft">Draft</div>
+                    <ul class="summary-list">
+                        <li><span>Questions</span> <strong>0</strong></li>
+                        <li><span>Pass mark</span> <strong>@Model.pass_percentage%</strong></li>
+                        <li><span>Time limit</span> <strong>No time limit</strong></li>
+                        <li><span>Attempts</span> <strong>0</strong></li>
+                    </ul>
+                </div>
+
+                <div class="card checklist-card">
+                    <h3>Question checklist</h3>
+                    <ul class="checklist">
+                        <li>✓ One clear question</li>
+                        <li>✓ Four distinct answer options</li>
+                        <li>✓ Exactly one correct answer</li>
+                        <li>✓ A helpful explanation</li>
+                        <li>✓ A positive number of marks</li>
+                    </ul>
+                    <hr />
+                    <p class="muted small">Assessment content becomes locked when the first attempt starts.</p>
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
