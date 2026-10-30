@@ -24,7 +24,8 @@ The login uses cookie claims, not Session. The connection name is SkillBridge.
 
 NEXT
 
-Finish the admin quiz and question Create/Edit/Delete pages.
+Quiz Create/Edit/Delete is integrated. Finish question/option Create/Edit/Delete.
+Read TEAM_INTEGRATION_REVIEW.txt for the fixes and remaining work.
 Each question needs four options and exactly one correct answer.
 Keep attempted quizzes unchanged so saved reviews retain their meaning.
 The answer page currently shows all questions together; answers save on Submit.
