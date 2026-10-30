@@ -11,8 +11,7 @@ public sealed class MySqlQuizReader(MySqlConnectionFactory connectionFactory) : 
         await using var command = connection.CreateCommand();
         command.CommandText = """
             SELECT q.id, q.course_id, c.title AS course_title, q.title, q.instructions,
-                   (SELECT COUNT(*) FROM questions question WHERE question.quiz_id = q.id) AS question_count,
-                   q.pass_percentage, q.is_published, c.is_published AS is_course_published
+                   (SELECT COUNT(*) FROM questions question WHERE question.quiz_id = q.id) AS question_count,q.pass_percentage, q.is_published, c.is_published AS is_course_published
             FROM quizzes q
             INNER JOIN courses c ON c.id = q.course_id
             WHERE q.id = @quizId
@@ -41,7 +40,7 @@ public sealed class MySqlQuizReader(MySqlConnectionFactory connectionFactory) : 
         await using var connection = await connectionFactory.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT q.id, c.title AS course_title, q.title, q.is_published,
+            SELECT q.id, c.title AS course_title, q.title,q.pass_percentage, q.is_published,
                    (SELECT COUNT(*) FROM questions question WHERE question.quiz_id = q.id) AS question_count
             (SELECT COUNT(*) FROM quiz_attempts qa WHERE qa.quiz_id = q.id) AS attempt_count 
             FROM quizzes q
@@ -52,7 +51,7 @@ public sealed class MySqlQuizReader(MySqlConnectionFactory connectionFactory) : 
         var quizzes = new List<QuizSummary>();
         while (await reader.ReadAsync(cancellationToken))
         {
-            quizzes.Add(new QuizSummary(reader.GetInt64("id"), reader.GetString("course_title"), reader.GetString("title"), reader.GetBoolean("is_published"), reader.GetInt32("question_count"),
+            quizzes.Add(new QuizSummary(reader.GetInt64("id"), reader.GetString("course_title"), reader.GetString("title"), reader.GetDecimal("pass_percentage"), reader.GetBoolean("is_published"), reader.GetInt32("question_count"),
             reader.GetInt32("attempt_count")));
         }
 

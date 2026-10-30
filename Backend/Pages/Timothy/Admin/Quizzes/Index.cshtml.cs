@@ -13,6 +13,6 @@ public sealed class IndexModel(IQuizReader quizzes) : PageModel
     {
         Quizzes = await quizzes.GetAllAsync(cancellationToken);
     }
-    
+    //
 }
 // here will be form to edit and del 

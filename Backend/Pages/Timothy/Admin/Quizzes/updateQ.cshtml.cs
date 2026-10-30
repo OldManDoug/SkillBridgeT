@@ -8,10 +8,11 @@ using MySqlConnector;
 namespace SkillBridge.Web.Pages.Admin.Quizzes;
 
 [Authorize(Roles = "Admin")]
-public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory connections) : PageModel
+public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory connection, IConfiguration _configuration) : PageModel
 {
+     
    [BindProperty]
-    public int QuizId { get; set; }
+    public long QuizId { get; set; }
 
     [BindProperty]
     public long CourseId { get; set; } // Display-only or tracked for reference
@@ -83,7 +84,7 @@ public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory conn
         }
     }
 
-    private async Task LoadQuizDataAsync(int id, CancellationToken cancellationToken)
+    private async Task LoadQuizDataAsync(long id, CancellationToken cancellationToken)
     {
         string connString = _configuration.GetConnectionString("DefaultConnection") ?? "";
         await using var conn = new MySqlConnection(connString);
@@ -96,16 +97,14 @@ public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory conn
         await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
         {
-            QuizId = reader.GetInt32("id");
+            QuizId = reader.GetInt64("id");
             CourseId = reader.GetInt64("course_id");
             Title = reader.GetString("title");
             Instructions = reader.GetString("instructions");
             PassPercentage = reader.GetInt32("pass_percentage");
             IsPublished = reader.GetBoolean("is_published");
         }
- string message ="Quiz is updated ";
- 
-        return RedirectToPage("Timothy/Admin/Quizzes/Index");
+        // return RedirectToPage("/Timothy/Admin/Quizzes/Index");
     } 
-       
+   
 }
