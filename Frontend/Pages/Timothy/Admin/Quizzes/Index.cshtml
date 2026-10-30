@@ -12,7 +12,8 @@
     </div>
 </div>
 <!--FOR CREATE QUIZ will go to dedicated page -->
-<button type="submit" asp-page="/Timothy/Admin/Quizzes/Create"> Create Quiz </button> 
+<a class="btn primary" asp-page="/Timothy/Admin/Quizzes/Create">Create quiz</a>
+@if (!string.IsNullOrEmpty(Model.StatusMessage)) { <p role="status">@Model.StatusMessage</p> }
 @if (Model.Quizzes.Count == 0)
 {
     <section class="card empty">
@@ -36,104 +37,33 @@ else
                 </tr>
             </thead>
             <tbody>
-        
+
                 @foreach (var quiz in Model.Quizzes )
                 {
-                    //how to make the attempts however? 
+                    //how to make the attempts however?
                     <tr>
                         <td><span class="table-label">Quiz</span>@quiz.Title</td>
                         <td><span class="table-label">Course</span>@quiz.CourseTitle</td>
                         <td><span class="table-label">Questions</span>@quiz.QuestionCount</td>
                        <td><span class="table-label">Pass Mark </span>@quiz.PassPercentage</td>
-                       <td><span class="table-label">Attempts</span></td> 
+                       <td><span class="table-label">Attempts</span>@quiz.attempts</td>
                         <td>
                             <span class="table-label">Status</span>
                             <span class="badge @(quiz.IsPublished ? "success" : "warning")">@(quiz.IsPublished ? "Published" : "Draft")</span>
                         </td>
                         <td class="actions">
                             <a asp-page="/Timothy/Quizzes/Start" asp-route-quizId="@quiz.Id" aria-label="Preview @quiz.Title">Preview</a>
-                       <button type="button" class="edit-btn"  asp-page="/Timothy/Admin/Quizzes/Update">Edit</button>
-                        <a asp-page="/Timothy/Admin/Quizzes/Index" 
-                                   asp-page-handler="Delete" 
-                                   asp-route-id="@quiz.Id" 
-                                   class="todo-action-btn delete-btn" 
-                                   onclick="return confirm('Are you sure you want to delete this quiz and questions?');"> 
-                                    Delete 
-                                </a> 
-                        <button type="button" onclick="return">Delete</button>
-                        
+                            <a class="edit-btn" asp-page="/Timothy/Admin/Quizzes/Update" asp-route-id="@quiz.Id">Edit</a>
+                            <form method="post" asp-page-handler="Delete" asp-route-quizId="@quiz.Id" data-confirm="Delete this unused quiz?">
+                                <button type="submit" class="btn danger">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 }
-                
+
             </tbody>
         </table>
-        
+
     </div>
-    
+
 }
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
- 
-<script> 
-    $(document).ready(function () { 
-        $(".edit-btn").click(function () { 
-            //update the forms
-            var id = $(this).data("id"); 
-            var task = $(this).data("task"); 
-            var completed = String($(this).data("completed")) 
-                .toLowerCase() === "true"; 
-            var dueDate = $(this).attr("data-due-date"); 
- 
-            $("#EditId").val(id); 
-            $("#EditTask").val(task); 
-            $("#EditCompleted").prop("checked", completed); 
-            $("#EditDueDate").val(dueDate); 
- 
-            $("#editModal").show(); 
-        }); 
- 
-        $("#closeModal").click(function () { 
-            $("#editModal").hide(); 
-        }); 
- 
-        $(window).click(function (event) { 
-            if ($(event.target).is("#editModal")) { 
-                $("#editModal").hide(); 
-            } 
-        }); 
-        // for delete
-    }); 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
- 
-<script> 
-    $(document).ready(function () { 
-        $(".edit-btn").click(function () { 
-            var id = $(this).data("id"); 
-            var task = $(this).data("task"); 
-            var completed = String($(this).data("completed")) 
-                .toLowerCase() === "true"; 
-            var dueDate = $(this).attr("data-due-date"); 
- 
-            $("#EditId").val(id); 
-            $("#EditTask").val(task); 
-            $("#EditCompleted").prop("checked", completed); 
-            $("#EditDueDate").val(dueDate); 
- 
-            $("#editModal").show(); 
-        }); 
- 
-        $("#closeModal").click(function () { 
-            $("#editModal").hide(); 
-        }); 
- 
-        $(window).click(function (event) { 
-            if ($(event.target).is("#editModal")) { 
-                $("#editModal").hide(); 
-            } 
-        }); 
-    }); 
-</script>
-</script>
-<!--Delete button will it need to make a separate for it or can just delete on site... 
-probably this one can delete on sight here. -->
-<!--create update delete here as admin can do. buttons and form probably/, change also in here depending on what -->

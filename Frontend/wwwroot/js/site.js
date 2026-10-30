@@ -54,3 +54,9 @@ for (const input of document.querySelectorAll(".input-validation-error")) {
 
 const validationSummary = document.querySelector(".validation-summary-errors");
 validationSummary?.focus();
+
+for (const form of document.querySelectorAll("form[data-confirm]")) {
+    form.addEventListener("submit", event => {
+        if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+    });
+}

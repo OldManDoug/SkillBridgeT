@@ -1,0 +1,40 @@
+@page
+@model SkillBridge.Web.Pages.Hamzah.Forum.EditorModel
+@{
+    ViewData["Title"] = Model.IsEditing ? "Edit discussion" : "Start a discussion";
+}
+<div class="page-head">
+    <div>
+        <p class="eyebrow">COMMUNITY</p>
+        <h1>@(Model.IsEditing ? "Edit discussion" : "Start a discussion")</h1>
+        <p>Ask a practical question or share something helpful with the community.</p>
+    </div>
+</div>
+
+<section class="card">
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="field-validation-error"></div>
+
+            <div class="field">
+                <label asp-for="Title">Title <span class="required">*</span></label>
+                <input asp-for="Title" class="control" />
+                <span asp-validation-for="Title" class="field-error"></span>
+                <p class="form-help">Between 5 and 120 characters. A clear question works best.</p>
+            </div>
+
+            <div class="field">
+                <label asp-for="Body">Body <span class="required">*</span></label>
+                <textarea asp-for="Body" class="control" rows="10"></textarea>
+                <span asp-validation-for="Body" class="field-error"></span>
+                <p class="form-help">Between 10 and 5,000 characters. Include what you tried and what happened.</p>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn primary">@(Model.IsEditing ? "Save changes" : "Publish discussion")</button>
+                <a asp-page="/Hamzah/Forum/Index" class="btn ghost">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>

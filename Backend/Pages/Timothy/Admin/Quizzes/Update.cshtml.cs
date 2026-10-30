@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,23 +9,23 @@ using MySqlConnector;
 namespace SkillBridge.Web.Pages.Admin.Quizzes;
 
 [Authorize(Roles = "Admin")]
-public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory connection, IConfiguration _configuration) : PageModel
+public sealed class UpdateModel(MySqlConnectionFactory connections, QuizAttemptStore attempts) : PageModel
 {
-     
+
    [BindProperty]
     public long QuizId { get; set; }
 
     [BindProperty]
     public long CourseId { get; set; } // Display-only or tracked for reference
 
-    [BindProperty]
+    [BindProperty, Required, StringLength(120, MinimumLength = 3)]
     public string Title { get; set; } = string.Empty;
 
-    [BindProperty]
+    [BindProperty, Required, StringLength(2000)]
     public string Instructions { get; set; } = string.Empty;
 
-    [BindProperty]
-    public int PassPercentage { get; set; }
+    [BindProperty, Range(1,100)]
+    public decimal PassPercentage { get; set; }
 
     [BindProperty]
     public bool IsPublished { get; set; }
@@ -33,9 +34,9 @@ public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory conn
     public string? SuccessMessage { get; set; }
     public string? ErrorMessage { get; set; }
 
-    public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> OnGetAsync(long id, CancellationToken cancellationToken)
     {
-        if (!User.IsInRole("Admin")) return RedirectToPage("/Login");
+        if (!User.IsInRole("Admin")) return Challenge();
 
         await LoadQuizDataAsync(id, cancellationToken);
         if (QuizId == 0) return NotFound();
@@ -45,24 +46,27 @@ public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory conn
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
     {
-        if (!User.IsInRole("Admin")) return RedirectToPage("/Login");
+        if (!User.IsInRole("Admin")) return Challenge();
 
+        Title = (Title ?? "").Trim();
+        Instructions = (Instructions ?? "").Trim();
+        if (Title.Length < 3) ModelState.AddModelError(nameof(Title), "Use at least 3 characters.");
+        if (IsPublished && !QuizAttemptStore.IsReady(await attempts.QuestionsAsync(QuizId, cancellationToken)))
+            ModelState.AddModelError(nameof(IsPublished), "Add questions with four options and one correct answer each before publishing.");
         if (!ModelState.IsValid) return Page();
 
         try
         {
-            string connString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-            await using var conn = new MySqlConnection(connString);
-            await conn.OpenAsync(cancellationToken);
+            await using var conn = await connections.OpenAsync(cancellationToken);
 
             // Update everything EXCEPT quiz id and course id
             string sql = """
-                UPDATE quizzes 
-                SET title = @title, 
-                    instructions = @instructions, 
-                    pass_percentage = @passPercentage, 
-                    is_published = @isPublished 
-                WHERE id = @quizId;
+                UPDATE quizzes
+                SET title = @title,
+                    instructions = @instructions,
+                    pass_percentage = @passPercentage,
+                    is_published = @isPublished
+                WHERE id = @quizId AND NOT EXISTS (SELECT 1 FROM attempts WHERE quiz_id=@quizId);
                 """;
 
             await using var cmd = new MySqlCommand(sql, conn);
@@ -72,12 +76,16 @@ public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory conn
             cmd.Parameters.AddWithValue("@isPublished", IsPublished);
             cmd.Parameters.AddWithValue("@quizId", QuizId);
 
-            await cmd.ExecuteNonQueryAsync(cancellationToken);
+            if (await cmd.ExecuteNonQueryAsync(cancellationToken) == 0)
+            {
+                ErrorMessage = "This quiz does not exist or has attempts. Attempted quizzes cannot be edited.";
+                return Page();
+            }
 
             SuccessMessage = "Quiz updated successfully.";
-            return RedirectToPage("/Admin/Quizzes/Index");
+            return RedirectToPage("/Timothy/Admin/Quizzes/Index");
         }
-        catch (Exception)
+        catch (MySqlException exception) when (exception.Number is 1452 or 3819 or 4025)
         {
             ErrorMessage = "Failed to update quiz. Please try again.";
             return Page();
@@ -86,9 +94,7 @@ public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory conn
 
     private async Task LoadQuizDataAsync(long id, CancellationToken cancellationToken)
     {
-        string connString = _configuration.GetConnectionString("DefaultConnection") ?? "";
-        await using var conn = new MySqlConnection(connString);
-        await conn.OpenAsync(cancellationToken);
+            await using var conn = await connections.OpenAsync(cancellationToken);
 
         string sql = "SELECT id, course_id, title, instructions, pass_percentage, is_published FROM quizzes WHERE id = @id;";
         await using var cmd = new MySqlCommand(sql, conn);
@@ -101,10 +107,10 @@ public sealed class UpdateModel(IQuizReader quizzes, MySqlConnectionFactory conn
             CourseId = reader.GetInt64("course_id");
             Title = reader.GetString("title");
             Instructions = reader.GetString("instructions");
-            PassPercentage = reader.GetInt32("pass_percentage");
+            PassPercentage = reader.GetDecimal("pass_percentage");
             IsPublished = reader.GetBoolean("is_published");
         }
         // return RedirectToPage("/Timothy/Admin/Quizzes/Index");
-    } 
-   
+    }
+
 }

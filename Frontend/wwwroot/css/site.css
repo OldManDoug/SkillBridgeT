@@ -2009,16 +2009,16 @@ textarea:focus-visible {
 .quiz-option input { width: auto; margin-right: 12px; }
 .quiz-correct { border-color: #046c4e; background: #f0fdf4; }
 .quiz-incorrect { border-color: #e02424; background: #fdf2f2; }
-.edit-btn { 
-    background-color: #856404; 
-    color: white; 
-    padding: 8px 14px; 
-    border: none; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    margin-top: 8px; 
-} 
- 
-.edit-btn:hover { 
-    background-color: #5f4703; 
+.edit-btn {
+    background-color: #856404;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.edit-btn:hover {
+    background-color: #5f4703;
 }

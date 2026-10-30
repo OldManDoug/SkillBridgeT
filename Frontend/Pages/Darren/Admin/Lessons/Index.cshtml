@@ -1,50 +1,107 @@
 @page
-@model SkillBridge.Web.Pages.Admin.Lessons.IndexModel
+@model SkillBridge.Backend.Pages.Darren.Admin.Lessons.IndexModel
 @{
-    ViewData["Title"] = "Lessons";
+    ViewData["Title"] = "Darren - 02 Manage lessons";
 }
-<a asp-page="/JianYi/Admin/Index" class="breadcrumbs">← Administration</a>
-<div class="page-head">
-    <div>
-        <p class="eyebrow">COURSE CONTENT</p>
-        <h1>Lessons</h1>
-        <p>Review lessons and their order within each course.</p>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage)) { <p role="status">@Model.StatusMessage</p> }
+<div class="container-fluid py-4">
+    <div class="row gx-5">
+        <!-- Main Content Area -->
+        <div class="col-lg-10 col-md-9 ps-lg-4">
+            <!-- Clean Breadcrumb -->
+            <div class="text-muted small mb-3">
+                <span>Admin</span> <span class="mx-1">&gt;</span> <span class="text-dark fw-semibold">Lessons</span>
+            </div>
+
+            <!-- Header & Action Buttons on Same Level -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Lessons</h2>
+                    <p class="text-muted small mb-0">Write, order and maintain every course lesson.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a asp-page="Edit" class="btn primary fw-bold px-3 py-2 text-nowrap">Create lesson</a>
+                    <a asp-page="/Darren/Admin/Resources/Index" class="btn secondary">Manage resources</a>
+                </div>
+            </div>
+
+            <!-- Filter Bar Card -->
+            <div class="card card-body shadow-sm border-0 mb-4 bg-light">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold">Course</label>
+                        <select asp-for="CourseId" class="form-select form-select-sm">
+                            <option value="">All courses</option>
+                            @foreach (var course in Model.Courses) { <option value="@course.Id">@course.Title</option> }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">Search</label>
+                        <input type="text" asp-for="Search" class="form-control form-control-sm"
+                               placeholder="Search lesson title." />
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-sm primary w-50 fw-bold">Apply filters</button>
+                        <a asp-page="Index" class="btn btn-sm secondary w-50 fw-bold text-center">Clear</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lessons Data Table -->
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead class="table-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="py-3 ps-3">Course / order</th>
+                                <th class="py-3">Lesson</th>
+                                <th class="py-3 text-center">Minutes</th>
+                                <th class="py-3 text-center">Resources</th>
+                                <th class="py-3 text-end pe-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Lessons != null && Model.Lessons.Any())
+                            {
+                                @foreach (var lesson in Model.Lessons)
+                                {
+                                    <tr>
+                                        <td class="ps-3 fw-medium text-nowrap">@lesson.CourseTitle · @lesson.OrderIndex</td>
+                                        <td class="fw-bold">@lesson.Title</td>
+                                        <td class="text-center">@lesson.DurationMinutes</td>
+                                        <td class="text-center">@lesson.ResourceCount</td>
+                                        <td class="text-end pe-3 text-nowrap">
+                                            <div class="d-inline-flex gap-1 align-items-center">
+                                                <a asp-page="/Darren/Lessons/View" asp-route-id="@lesson.Id"
+                                                   class="btn btn-sm btn-outline-dark px-2 py-1">Preview</a>
+                                                <a asp-page="Edit" asp-route-id="@lesson.Id"
+                                                   class="btn btn-sm secondary px-2 py-1">Edit</a>
+                                                <form method="post" asp-page-handler="Delete" asp-route-id="@lesson.Id"
+                                                      class="d-inline m-0 p-0"
+                                                      data-confirm="Delete this lesson?">
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger px-2 py-1">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="5">No lessons found.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer summary -->
+            <div class="d-flex justify-content-between align-items-center mt-3 text-muted small px-1">
+                <div>Showing lessons</div>
+                <div>Sorted by the current list order</div>
+            </div>
+        </div>
     </div>
 </div>
-@if (Model.Lessons.Count == 0)
-{
-    <section class="card empty">
-        <h2>No lessons yet</h2>
-        <p>Lessons will appear here once course content has been added.</p>
-    </section>
-}
-@if (Model.Lessons.Count > 0)
-{
-    <div class="card table-wrap">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th scope="col">Course</th>
-                    <th scope="col">Order</th>
-                    <th scope="col">Lesson</th>
-                    <th scope="col">Duration</th>
-                    <th scope="col">Course status</th>
-                    <th scope="col">Preview</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var lesson in Model.Lessons)
-                {
-                    <tr>
-                        <td><span class="table-label">Course</span>@lesson.CourseTitle</td>
-                        <td><span class="table-label">Order</span>@lesson.SequenceNumber</td>
-                        <td><span class="table-label">Lesson</span>@lesson.Title</td>
-                        <td><span class="table-label">Duration</span>@lesson.DurationMinutes minutes</td>
-                        <td><span class="table-label">Course status</span><span class="badge @(lesson.IsPublished ? "success" : "warning")">@(lesson.IsPublished ? "Published" : "Draft")</span></td>
-                        <td><a asp-page="/Darren/Lessons/View" asp-route-id="@lesson.Id" aria-label="Preview @lesson.Title">View lesson</a></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}

@@ -14,7 +14,9 @@ Account pages, shared layout, live Admin totals and user management are implemen
 Read JIAN_YI_EXAMPLE.txt for the code walkthrough and checks to run.
 Chang Zhe's course CRUD, thumbnails, catalogue filters and enrol/drop are integrated.
 My Courses reads saved lesson progress and links to available lessons and quizzes.
-Forum, lesson and quiz reading pages are present; their remaining workflows are still needed.
+Lesson CRUD/progress, forum/moderation and admin quiz CRUD are integrated.
+Darren must finish resources/media; Timothy must finish question/option CRUD.
+Read TEAM_INTEGRATION_REVIEW.txt for corrections, tested scope and remaining work.
 The database starts with three draft courses. Empty lists are normal.
 
 ASSIGNMENT MARKS
@@ -31,14 +33,14 @@ Chang Zhe (ChangZhe), 5 layouts: Catalogue, course details, My Courses,
   Admin course list and course editor. Course CRUD and enrol/drop are integrated.
   Review the combined flow with Darren and Timothy, then collect report evidence.
 Darren (Darren), 5 layouts: Lessons, video/resources, downloads and progress.
-  Add Admin lesson/resource create/edit/delete. Make your own lesson content
+  Lesson CRUD is integrated. Finish resource create/edit/delete. Make your own lesson content
   and short videos; play videos with an HTML5 video element.
 Timothy (Timothy), 7 layouts: Quizzes, attempts, marking and results.
-  Add Admin quiz/question create/edit/delete. Calculate marks in C#.
+  Quiz CRUD is integrated. Finish question/option create/edit/delete. Calculate marks in C#.
   Show saved attempt history inside the quiz overview.
 Hamzah (Hamzah), 4 layouts: Forum list, thread/replies, thread editor
   and Admin moderation.
-  Add create/edit/delete with the correct author and Admin permissions.
+  Forum CRUD/moderation is integrated. Verify styling and final demo content.
 
 Each person codes, documents and presents their pages, C# logic and SQL.
 Use the shared login; check access for your own pages and actions.

@@ -40,13 +40,13 @@ public sealed class MySqlQuizReader(MySqlConnectionFactory connectionFactory) : 
         await using var connection = await connectionFactory.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT q.id, c.title AS course_title, q.title,q.pass_percentage, 
+            SELECT q.id, c.title AS course_title, q.title,q.pass_percentage,
             q.is_published, (SELECT COUNT(*) FROM questions question WHERE question.quiz_id = q.id) AS question_count,
-            (SELECT COUNT(*) FROM attempts qa WHERE qa.quiz_id = q.id) AS attempt_count 
+            (SELECT COUNT(*) FROM attempts qa WHERE qa.quiz_id = q.id) AS attempt_count
             FROM quizzes q
             INNER JOIN courses c ON c.id = q.course_id
             ORDER BY c.title, q.title, q.id;
-            """; // to add On 
+            """; // to add On
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         var quizzes = new List<QuizSummary>();
         while (await reader.ReadAsync(cancellationToken))
@@ -56,7 +56,7 @@ public sealed class MySqlQuizReader(MySqlConnectionFactory connectionFactory) : 
         }
 
         return quizzes;
-    
+
     }
 
 
