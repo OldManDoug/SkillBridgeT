@@ -1,0 +1,82 @@
+@page
+@model SkillBridge.Web.Pages.Hamzah.Admin.IndexModel
+@{
+    ViewData["Title"] = "Forum moderation";
+}
+<div class="page-head">
+    <div>
+        <p class="eyebrow">ADMIN</p>
+        <h1>Forum moderation</h1>
+        <p>Pin important discussions, lock ones that are finished, and remove anything that breaks the community rules.</p>
+    </div>
+</div>
+
+@if (Model.Threads.Count == 0)
+{
+    <section class="card empty">
+        <h2>No discussions yet</h2>
+        <p>Community discussions will appear here once members start posting.</p>
+    </section>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Discussion</th>
+                    <th>Author</th>
+                    <th>Replies</th>
+                    <th>Status</th>
+                    <th>Last active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var thread in Model.Threads)
+                {
+                    <tr>
+                        <td><a asp-page="/Hamzah/Forum/View" asp-route-id="@thread.Id">@thread.Title</a></td>
+                        <td>@thread.AuthorName</td>
+                        <td>@thread.ReplyCount</td>
+                        <td>
+                            @if (thread.IsPinned)
+                            {
+                                <span class="badge">Pinned</span>
+                            }
+                            @if (thread.IsLocked)
+                            {
+                                <span class="badge">Locked</span>
+                            }
+                            @if (!thread.IsPinned && !thread.IsLocked)
+                            {
+                                <span class="muted">Open</span>
+                            }
+                        </td>
+                        <td>@thread.UpdatedAt.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <div class="actions">
+                                <form method="post" asp-page-handler="Moderate">
+                                    <input type="hidden" name="ModerateThreadId" value="@thread.Id" />
+                                    <input type="hidden" name="SetPinned" value="@(!thread.IsPinned)" />
+                                    <input type="hidden" name="SetLocked" value="@thread.IsLocked" />
+                                    <button type="submit" class="btn ghost small">@(thread.IsPinned ? "Unpin" : "Pin")</button>
+                                </form>
+                                <form method="post" asp-page-handler="Moderate">
+                                    <input type="hidden" name="ModerateThreadId" value="@thread.Id" />
+                                    <input type="hidden" name="SetPinned" value="@thread.IsPinned" />
+                                    <input type="hidden" name="SetLocked" value="@(!thread.IsLocked)" />
+                                    <button type="submit" class="btn ghost small">@(thread.IsLocked ? "Unlock" : "Lock")</button>
+                                </form>
+                                <form method="post" asp-page-handler="DeleteThread" onsubmit="return confirm('Delete this discussion and all of its replies?');">
+                                    <input type="hidden" name="DeleteThreadId" value="@thread.Id" />
+                                    <button type="submit" class="btn danger small">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
