@@ -43,7 +43,6 @@ CREATE TABLE IF NOT EXISTS courses (
     level ENUM('Beginner', 'Intermediate', 'Advanced') NOT NULL DEFAULT 'Beginner',
     is_published BOOLEAN NOT NULL DEFAULT FALSE,
     artwork_key VARCHAR(40) NOT NULL DEFAULT 'default',
-    thumbnail_url VARCHAR(255) NULL,
     duration_minutes INT NOT NULL DEFAULT 0,
     created_at_utc TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at_utc TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
