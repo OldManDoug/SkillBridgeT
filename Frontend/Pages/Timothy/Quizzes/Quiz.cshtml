@@ -3,16 +3,16 @@
 @{
     ViewData["Title"] = Model.Quiz.Title;
 }
-
+<!--Breadcrumbs is a class that shows the pathway of a module's process-->
 <a asp-page="/Timothy/Quizzes/Start" asp-route-quizId="@Model.Quiz.Id" class="breadcrumbs">Back to quiz overview</a>
 <div class="page-head"><div><p class="eyebrow">@Model.Quiz.CourseTitle</p><h1>@Model.Quiz.Title</h1></div></div>
 <p>Choose one answer for each question. Check your answers before submitting. Answers are saved when you submit.</p>
 <form method="post" asp-route-attemptId="@Model.Attempt.Id">
     <div asp-validation-summary="All" class="field-error" role="alert"></div>
     @foreach (var question in Model.Questions)
-    {
+    {//Questions displayed in sequence from the QuestionsModel in SELECT
         <fieldset class="card section-space">
-            <legend>@question.SequenceNumber. @question.Text (@question.Marks marks)</legend>
+            <legend>@question.SequenceNumber. @question.Text (@question.Marks marks)</legend> 
             @foreach (var option in question.Options)
             {
                 <label class="quiz-option">
@@ -22,9 +22,9 @@
                 </label>
             }
         </fieldset>
-    }
+    }<!--Fieldset works as a overlapping for all the quiz-zes, Use radio button as MCQ format-->
     @if (SkillBridge.Web.Features.Quizzes.QuizAttemptStore.IsReady(Model.Questions))
-    {
+    {//questions are ready and all filled deploy with submit
         <button class="btn primary" type="submit">Submit quiz</button>
     }
     else

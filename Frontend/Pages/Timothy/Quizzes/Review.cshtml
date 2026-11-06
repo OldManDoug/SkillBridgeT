@@ -1,5 +1,5 @@
 @page
-@model SkillBridge.Web.Pages.Quizzes.ReviewModel
+@model SkillBridge.Web.Pages.Quizzes.ReviewModel //the model is use as allow cshtml accessed
 @{
     ViewData["Title"] = "Quiz attempt review";
 }
@@ -14,7 +14,7 @@
     <a asp-page="/Timothy/Quizzes/Start" asp-route-quizId="@Model.Quiz.Id" class="btn primary">Back to overview</a>
 </section>
 @foreach (var question in Model.Questions)
-{
+{ //results can show to allow student to nod and know improved
     <section class="card section-space">
         <span class="badge">Question @question.SequenceNumber</span>
         <h3>@question.Text</h3>
