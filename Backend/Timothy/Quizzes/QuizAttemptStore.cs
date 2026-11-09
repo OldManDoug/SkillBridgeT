@@ -2,7 +2,7 @@ using MySqlConnector;
 using SkillBridge.Web.Infrastructure.Data;
 
 namespace SkillBridge.Web.Features.Quizzes;
-
+//https://www.c-sharpcorner.com/article/creating-dynamic-web-quizzes-using-C-Sharp-and-Asp-Net
 public sealed record QuizOption(long Id, string Text, bool IsCorrect);
 public sealed record QuizQuestion(long Id, int SequenceNumber, string Text, string Explanation, int Marks, List<QuizOption> Options);
 public sealed record SavedAttempt(long Id, long QuizId, bool IsSubmitted, int Score, int MaximumMarks, DateTime? SubmittedAt);

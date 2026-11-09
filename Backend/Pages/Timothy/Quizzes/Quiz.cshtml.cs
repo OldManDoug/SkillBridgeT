@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using SkillBridge.Web.Features.Quizzes;
 
 namespace SkillBridge.Web.Pages.Quizzes;
-
+//https://www.c-sharpcorner.com/article/creating-dynamic-web-quizzes-using-C-Sharp-and-Asp-Net
 public sealed class QuizModel(IQuizReader quizzes, QuizAttemptStore attempts) : PageModel
 {
     public SavedAttempt Attempt { get; private set; } = null!;

@@ -36,7 +36,7 @@ public string? ErrorMessage { get; set; }
         Quizzes = await quizzes.GetAllAsync(cancellationToken);
             await LoadCoursesAsync(cancellationToken);
     }
-
+//https://www.surfsidemedia.in/post/creating-a-simple-quiz-app-in-c-sharp?
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
     {
         Title = (Title ?? "").Trim();

@@ -41,4 +41,4 @@ public sealed class IndexModel(IQuizReader quizzes, MySqlConnectionFactory conne
         return RedirectToPage();
     }
 }
-// here will be form to edit and del
+//https://github.com/ZubairAhmed01719/Quiz-Project-C-.NET-Based-Application/blob/main/Form1.Designer.cs
